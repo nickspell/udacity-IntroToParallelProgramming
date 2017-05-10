@@ -103,10 +103,11 @@
 
 #include "utils.h"
 #include "device_launch_parameters.h"
+#include <stdio.h>
 #include <algorithm>
 
-const int K = 3; //values between 1 and 3 should respect memory constraints (Pascal). Greater the value, lower the execution time
-
+const int BLOCK_SIZE_X = 32;
+const int BLOCK_SIZE_Y = 32; //32x32=1024 block size
 
 __device__ void clamp(int & pos, int maxpos) {
 	pos = pos > 0 ? pos : 0;
@@ -360,9 +361,18 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_
 	unsigned char *d_blueBlurred,
 	const int filterWidth)
 {
-	//Set reasonable block size (i.e., number of threads per block)
-	const dim3 blockSize(K*filterWidth, K*filterWidth);
 
+
+
+	//Set reasonable block size (i.e., number of threads per block)
+	const dim3 blockSize(BLOCK_SIZE_X,BLOCK_SIZE_Y);
+	
+
+	//Automatic blocksize calculation: suggests 1024
+    /*int suggestedblocksize;
+	int mingridsize;
+	cudaOccupancyMaxPotentialBlockSizeVariableSMem(&mingridsize, &suggestedblocksize, gaussian_blur, [&filterWidth](int blockSize) {return ((int)(sqrt(blockSize)) + filterWidth - 1)*((int)(sqrt(blockSize)) + filterWidth - 1) * sizeof(unsigned char); }, 0);
+	printf("%d %d\n", suggestedblocksize,mingridsize);*/
 
 	//Compute correct grid size (i.e., number of blocks per kernel launch)
 	//from the image size and and block size.
@@ -379,7 +389,6 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_
 	//size of the shared memory object
 	int shared_size = (blockSize.x + filterWidth - 1)*(blockSize.y + filterWidth - 1) * sizeof(unsigned char);
 
-
 	// Call your convolution kernel here 3 times, once for each color channel.
 	gaussian_blur << <gridSize, blockSize, shared_size >> > (d_red, d_redBlurred, numRows, numCols, d_filter, filterWidth);
 	gaussian_blur << <gridSize, blockSize, shared_size >> > (d_green, d_greenBlurred, numRows, numCols, d_filter, filterWidth);
@@ -389,6 +398,21 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_
 	// launching your kernel to make sure that you didn't make any mistakes.
 	cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 
+
+	//FIXME Occupancy calculation results differs in Debug mode
+#ifdef DEBUG
+	int maxactiveblocks;
+	cudaOccupancyMaxActiveBlocksPerMultiprocessor(&maxactiveblocks, gaussian_blur, blockSize.x*blockSize.y,0);
+	int device;
+	cudaDeviceProp props;
+	cudaGetDevice(&device);
+	cudaGetDeviceProperties(&props, device);
+	float occupancy = (maxactiveblocks* blockSize.x*blockSize.y / props.warpSize) / (float)(props.maxThreadsPerMultiProcessor / props.warpSize);
+	printf("Launched with %d X %d blocksize : %f%% theoretical occupancy\n", blockSize.x, blockSize.y, occupancy * 100);
+#endif // DEBUG
+
+
+	
 	// Now we recombine your results. We take care of launching this kernel for you.
 	//
 	// NOTE: This kernel launch depends on the gridSize and blockSize variables,
@@ -400,6 +424,9 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_
 		numRows,
 		numCols);
 	cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
+
+
+	
 
 }
 

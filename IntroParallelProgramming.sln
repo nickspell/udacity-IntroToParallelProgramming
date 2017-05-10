@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProblemSet1-RGB2Gray", "Pro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProblemSet2-Blur", "ProblemSet2-Blur\ProblemSet2-Blur.vcxproj", "{5B684E70-F85A-4BE0-82A2-A45023E5F5CF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProblemSet3-ToneMapping", "ProblemSet3-ToneMapping\ProblemSet3-ToneMapping.vcxproj", "{EF9EF6B2-0414-41ED-86D3-DBF8A4799BA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{5B684E70-F85A-4BE0-82A2-A45023E5F5CF}.Release|x64.Build.0 = Release|x64
 		{5B684E70-F85A-4BE0-82A2-A45023E5F5CF}.Release|x86.ActiveCfg = Release|Win32
 		{5B684E70-F85A-4BE0-82A2-A45023E5F5CF}.Release|x86.Build.0 = Release|Win32
+		{EF9EF6B2-0414-41ED-86D3-DBF8A4799BA9}.Debug|x64.ActiveCfg = Debug|x64
+		{EF9EF6B2-0414-41ED-86D3-DBF8A4799BA9}.Debug|x64.Build.0 = Debug|x64
+		{EF9EF6B2-0414-41ED-86D3-DBF8A4799BA9}.Debug|x86.ActiveCfg = Debug|Win32
+		{EF9EF6B2-0414-41ED-86D3-DBF8A4799BA9}.Debug|x86.Build.0 = Debug|Win32
+		{EF9EF6B2-0414-41ED-86D3-DBF8A4799BA9}.Release|x64.ActiveCfg = Release|x64
+		{EF9EF6B2-0414-41ED-86D3-DBF8A4799BA9}.Release|x64.Build.0 = Release|x64
+		{EF9EF6B2-0414-41ED-86D3-DBF8A4799BA9}.Release|x86.ActiveCfg = Release|Win32
+		{EF9EF6B2-0414-41ED-86D3-DBF8A4799BA9}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
