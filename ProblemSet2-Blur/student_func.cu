@@ -217,27 +217,27 @@ void gaussian_blur(const unsigned char* const inputChannel,
 	int pos_to_load_from_x_original = pos_to_load_from_x;
 	int pos_to_load_from_y_original = pos_to_load_from_y;
 
-	sh_arr[threadIdx.y*(blockDim.y + filterWidth - 1) + threadIdx.x] = inputChannel[pos_to_load_from_y*numCols + pos_to_load_from_x];
+	sh_arr[threadIdx.y*(blockDim.x + filterWidth - 1) + threadIdx.x] = inputChannel[pos_to_load_from_y*numCols + pos_to_load_from_x];
 	
 
 	if (threadIdx.y >= (blockDim.y - filterWidth + 1)) {
 		pos_to_load_from_y = thread_2D_pos.y + halfWidth;
 		clamp(pos_to_load_from_y, numRows);
-		sh_arr[(threadIdx.y + filterWidth - 1)*(blockDim.y + filterWidth - 1) + threadIdx.x] = inputChannel[pos_to_load_from_y*numCols + pos_to_load_from_x_original];
+		sh_arr[(threadIdx.y + filterWidth - 1)*(blockDim.x + filterWidth - 1) + threadIdx.x] = inputChannel[pos_to_load_from_y*numCols + pos_to_load_from_x_original];
 		
 	}
 
 	if (threadIdx.x >= (blockDim.x - filterWidth + 1)) {
 		pos_to_load_from_x = thread_2D_pos.x + halfWidth;
 		clamp(pos_to_load_from_x, numCols);
-		sh_arr[(threadIdx.y)*(blockDim.y + filterWidth - 1) + threadIdx.x + filterWidth - 1] = inputChannel[pos_to_load_from_y_original*numCols + pos_to_load_from_x];
+		sh_arr[(threadIdx.y)*(blockDim.x + filterWidth - 1) + threadIdx.x + filterWidth - 1] = inputChannel[pos_to_load_from_y_original*numCols + pos_to_load_from_x];
 	}
 	if (threadIdx.x < (filterWidth - 1) && threadIdx.y < (filterWidth - 1)) {
 		pos_to_load_from_x = thread_2D_pos.x - halfWidth + blockDim.x;
 		pos_to_load_from_y = thread_2D_pos.y - halfWidth + blockDim.y;
 		clamp(pos_to_load_from_x, numCols);
 		clamp(pos_to_load_from_y, numRows);
-		sh_arr[(threadIdx.y + blockDim.y)*(blockDim.y + filterWidth - 1) + threadIdx.x + blockDim.x] = inputChannel[pos_to_load_from_y*numCols + pos_to_load_from_x];
+		sh_arr[(threadIdx.y + blockDim.y)*(blockDim.x + filterWidth - 1) + threadIdx.x + blockDim.x] = inputChannel[pos_to_load_from_y*numCols + pos_to_load_from_x];
 	}
 
 	__syncthreads();
@@ -250,7 +250,7 @@ void gaussian_blur(const unsigned char* const inputChannel,
 		for (int x = 0; x < filterWidth; x++){
 			int image_r = threadIdx.y + y;
 			int image_c = threadIdx.x + x;
-			float channelvalue = static_cast<float>(sh_arr[image_r*(blockDim.y + filterWidth - 1) + image_c]);
+			float channelvalue = static_cast<float>(sh_arr[image_r*(blockDim.x + filterWidth - 1) + image_c]);
 			value_final += filter[y*filterWidth + x] *channelvalue;
 		}
 	}
@@ -399,17 +399,15 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_
 	cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 
 
-	//FIXME Occupancy calculation results differs in Debug mode
-#ifdef DEBUG
-	int maxactiveblocks;
-	cudaOccupancyMaxActiveBlocksPerMultiprocessor(&maxactiveblocks, gaussian_blur, blockSize.x*blockSize.y,0);
-	int device;
-	cudaDeviceProp props;
-	cudaGetDevice(&device);
-	cudaGetDeviceProperties(&props, device);
-	float occupancy = (maxactiveblocks* blockSize.x*blockSize.y / props.warpSize) / (float)(props.maxThreadsPerMultiProcessor / props.warpSize);
-	printf("Launched with %d X %d blocksize : %f%% theoretical occupancy\n", blockSize.x, blockSize.y, occupancy * 100);
-#endif // DEBUG
+	//Occupancy calculation
+	//int maxactiveblocks;
+	//cudaOccupancyMaxActiveBlocksPerMultiprocessor(&maxactiveblocks, gaussian_blur, blockSize.x*blockSize.y,0);
+	//int device;
+	//cudaDeviceProp props;
+	//cudaGetDevice(&device);
+	//cudaGetDeviceProperties(&props, device);
+	//float occupancy = (maxactiveblocks* blockSize.x*blockSize.y / props.warpSize) / (float)(props.maxThreadsPerMultiProcessor / props.warpSize);
+	//printf("Launched with %d X %d blocksize : %f%% theoretical occupancy\n", blockSize.x, blockSize.y, occupancy * 100);
 
 
 	
