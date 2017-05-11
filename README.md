@@ -17,5 +17,5 @@ Apply a Gaussian blur convolution filter to an input RGBA image (blur each chann
 ### Topics
 Example of a **stencil** primitive operation on a 2D array. Use of the **shared memory** in order to speed-up the algorithm. Both global memory and shared memory based kernels are provided, the latter providing approx. 1.6 speedup over the first.
 
-### Problem Set 3 -Tone Mapping
+## Problem Set 3 -Tone Mapping
 In progress...
