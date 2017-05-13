@@ -20,7 +20,7 @@ Example of a **stencil** primitive operation on a 2D array. Use of the **shared 
 ## Problem Set 3 -Tone Mapping
 ### Objective
 Map a High Dynamic Range image into an image for a device supporting a smaller range of intensity values.
-## Topics
+### Topics
 - Compute range of intensity values of the input image: min and max **reduce** implemented.
 - Compute **histogram** of intensity values (1024-values array)
 - Compute the cumulative ditribution function of the histogram: Hillis & Steele **scan** algorithm (step-efficient, well suited for small arrays like the histogram one). 
