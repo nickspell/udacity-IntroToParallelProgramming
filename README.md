@@ -35,3 +35,8 @@ Sorting algorithms with GPU: given an input array of NCC scores, sort it in asce
 - From Bielloch Scan extracts: an histogram of predicate values [0 numberOfFalses], an offset vector (the actual result of scan)
 - A move kernel computes the new index of each element (using the two structures above), and moves it.
 
+## Problem Set 4 - Optimized histogram computation
+### Objective
+Improve the histogram computation performance on GPU over the simple global atomic solution.
+### Topics
+**Per-block** histogram computation. Each block computes his own histogram in shared memory, and histograms are combined at the end in global memory (more than 7x speedup over global atomic implementation, while being relatively simple). 
