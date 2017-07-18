@@ -25,3 +25,13 @@ Map a High Dynamic Range image into an image for a device supporting a smaller r
 - Compute **histogram** of intensity values (1024-values array)
 - Compute the cumulative ditribution function of the histogram: Hillis & Steele **scan** algorithm (step-efficient, well suited for small arrays like the histogram one). 
 
+## Problem Set 4 - Red eyes removal
+### Objective
+Remove red eys effect from an inout RGBA image (it uses Normalized Cross Correlation against a training template).
+### Topics
+Sorting algorithms with GPU: given an input array of NCC scores, sort it in ascending order: **radix sort**. For each bit:
+- Compute a predicate vector (0:false, 1:true)
+- Performs **Bielloch Scan** on the predicate vector (for both false and positive cases)
+- From Bielloch Scan extracts: an histogram of predicate values [0 numberOfFalses], an offset vector (the actual result of scan)
+- A move kernel computes the new index of each element (using the two structures above), and moves it.
+
