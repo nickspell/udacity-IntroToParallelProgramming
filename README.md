@@ -35,8 +35,19 @@ Sorting algorithms with GPU: given an input array of NCC scores, sort it in asce
 - From Bielloch Scan extracts: an histogram of predicate values [0 numberOfFalses], an offset vector (the actual result of scan)
 - A move kernel computes the new index of each element (using the two structures above), and moves it.
 
-## Problem Set 4 - Optimized histogram computation
+## Problem Set 5 - Optimized histogram computation
 ### Objective
 Improve the histogram computation performance on GPU over the simple global atomic solution.
 ### Topics
 **Per-block** histogram computation. Each block computes his own histogram in shared memory, and histograms are combined at the end in global memory (more than 7x speedup over global atomic implementation, while being relatively simple). 
+
+## Problem Set 6 - Seamless Image Cloning
+### Objective
+Given a target image (e.g. a swimming pool), do a seamless attachment of a source image mask (e.g. an hyppo).
+### Topics
+The algorithm consists into performing Jacobi iterations on the source and target image to blend one with the other.
+- Given the mask, detect the interior points and the boundary points
+- Since the algorithm has to be performed only on the interior points, compute the **bounding box** of the mask region to restrict the Jacobi iterations on a subimage.
+- Split the images in the R,G and B channels.
+- Run 800 Jacobi iterations on each channel. The code makes use of **CUDA Streams** to run concurrently the same kernel on the 3 different channels (speedup of 3x on my machine, of 1.5x on the Udacity machine). The Jacobi kernel makes extensive use of shared memory, so the number of threads per block has been reduced to maximize SM's occupancy.
+- Recombine the 3 channels to form the output image.
